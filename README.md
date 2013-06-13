@@ -1,19 +1,23 @@
 EccentricityDistribution
 ========================
 
-** Population Working Group's **
+** Population/Eccentricity Sub-Working Group **
 Code, data, notes for a hierarchical model to investigate the eccentricity distribution at #exosamsi
 
 
 Information
 -----------
-TBD
+Room 204 (week 1)
+Room 203 (weeks 2-3)
+Office Hours 11:00am ET
+Leaders: Meg (Population WG), Megan (Eccentricity sub-WG)
 
 Members
 -------
+* 
 * [Eric Ford](https://github.com/eford)
 * [Someone]
-* Your name here…
+* Add your name here…
 
 
 How to join the exosami organization
