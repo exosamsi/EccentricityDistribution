@@ -1,7 +1,8 @@
 EccentricityDistribution
 ========================
 
-** Population Working Group's Code, data, notes for a hierarchical model to investigate the eccentricity distribution at #exosamsi ** 
+** Population Working Group's **
+Code, data, notes for a hierarchical model to investigate the eccentricity distribution at #exosamsi
 
 
 Information
@@ -22,7 +23,7 @@ One option is: if you star this repository, DFM can add you to the organization.
 Alternatively, if you want to have more fun with git+GitHub:
 
 * [Join GitHub](https://github.com/)
-* Find the [exosamsi/ccentricityDistribution repo](https://github.com/exosamsi/EccentricityDistribution)
+* Find the [exosamsi/EccentricityDistribution repo](https://github.com/exosamsi/EccentricityDistribution)
 * Click the "fork" button:
 
 ![](https://raw.github.com/exosamsi/detrending/master/fork.png)
