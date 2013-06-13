@@ -31,7 +31,7 @@ Alternatively, if you want to have more fun with git+GitHub:
 * Figure out how to add your name to the members list in this file :smile:.
 * Then submit a pull request:
 
-![](https://raw.github.com/exosamsi/EccentricityDistribution/master/pull.png)
+![](https://raw.github.com/exosamsi/detrending/master/pull.png)
 
 
 How to contribute to the repository
