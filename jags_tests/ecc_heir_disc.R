@@ -39,10 +39,14 @@ sim = jags(data, inits, parameters.to.save, model.file=model.file, n.chains=2, n
 calc.metric.1(inputdata$H_TRUE,inputdata$K_TRUE,hpred,kpred)
 
 Ncomp <- 2
-hktest <- generate.ecc.mixture.disc(Ndata,c(0.3,0.7),c(0.3,0.05),0.05,0.2)
+sigmahobs <- 0.001
+sigmakobs <- 0.001
+ftrue <- c(0.8,0.2)
+sigmaetrue <- c(0.05,0.3)
+hktest <- generate.ecc.mixture.disc(Ndata,ftrue,sigmaetrue,sigmahobs,sigmakobs)
 htest <- hktest[1:Ndata]
 ktest <- hktest[(Ndata+1):(2*Ndata)]
-data = list(hhat=htest,khat=ktest,sigmahobs=rep(0.05,Ndata),sigmakobs=rep(0.2,Ndata),Ndata=Ndata,Ncomp=Ncomp)
+data = list(hhat=htest,khat=ktest,sigmahobs=rep(sigmahobs,Ndata),sigmakobs=rep(sigmakobs,Ndata),Ndata=Ndata,Ncomp=Ncomp)
 sim = jags(data, inits, parameters.to.save, model.file=model.file, n.chains=2, n.iter=1000)
 calc.metric.1(htest,ktest,hpred,kpred)
 
