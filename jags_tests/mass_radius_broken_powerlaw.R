@@ -22,9 +22,8 @@ load.module("glm") #improves performance
 
 # input data/measurements: radius.obs, sigma.radius, mass.obs, sigma.mass, Ndata
 # latent variables params: mass.true, radius.true,
-# hyperparam:  radius.const.lo, radius.const.hi, mass.radius.exp.lo, mass.radius.exp.hi, sigma.radius.phys, mass.prior.exp
+# hyperparam:  radius.const.lo, radius.const.hi, mass.radius.exp.lo, mass.radius.exp.hi, sigma.radius.phys, mass.break
 # WARNING: priors not thought through yet
-
 
 mass.radius.broken.powerlaw.model.1 <- function() {
 sigma.radius.phys ~ dunif(0.,1.0)
@@ -35,7 +34,7 @@ mass.radius.exp.hi ~ dunif(-1.0,1.0)
 mass.break ~ dunif(50.0,600.)
 mass.prior.exp <- 0.5
 min.mass <- 1.0
-max.mass <- 600
+max.mass <- 3000.0
 
 for (i in 1:Ndata) { 
   mass.true[i] ~ dpar( mass.prior.exp,min.mass) %_% T(min.mass,max.mass)
@@ -80,8 +79,8 @@ rnorm.bound <- function(Ndata, mu, prec, lower.bound = 0, upper.bound = Inf)
 Ndata <- 100
 #   Masses 
 mass.true.gen.min <- 1.0
-mass.true.gen.max <- 3000
-mass.true.gen.alpha <- 0.125
+mass.true.gen.max <- 3000.0
+mass.true.gen.alpha <- 0.25
 mass.true.gen <- rpareto.bound(Ndata,mass.true.gen.min,mass.true.gen.alpha,upper.bound=mass.true.gen.max)
 mass.obs = rep(0.,Ndata)
 for (i in 1:Ndata) { 
