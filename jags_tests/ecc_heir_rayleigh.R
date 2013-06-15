@@ -12,41 +12,50 @@ inputdata = subset(inputdata, inputdata$H_OBS^2+inputdata$K_OBS^2<1)
 #inputdata
 Ndata <- length(inputdata$H_OBS)
 
-ecc.mixture.disc <- function() {
-for (cc in 1:Ncomp) { 
- sigmae[cc] ~ dunif(0.,1.)
- alpha[cc] <- 1.0
- }
-f[1:Ncomp] ~ ddirch(alpha) 
-for (i in 1:Ndata) {  
- c[i] ~ dcat(f) 
- h[i] ~ dnorm(0.,1.0/(sigmae[c[i]]*sigmae[c[i]])) %_% T(-1,1) 
- k[i] ~ dnorm(0.,1.0/(sigmae[c[i]]*sigmae[c[i]])) %_% T(-1,1)
+	
+ecc.disc.rayleigh <- function() {
+sigmae ~ dunif(0.,1.)
+for (i in 1:Ndata) { 
+ h[i] ~ dnorm(0.,1.0/(sigmae*sigmae)) %_% T(-1,1) # *lambda[i]
+ k[i] ~ dnorm(0.,1.0/(sigmae*sigmae)) %_% T(-1,1)
  hhat[i] ~ dnorm(h[i],1.0/(sigmahobs[i]*sigmahobs[i])) %_% T(-1,1)
  khat[i] ~ dnorm(k[i],1.0/(sigmakobs[i]*sigmakobs[i])) %_% T(-1,1)
  }
 }
-model.file = "ecc_heir_disc.txt"
-write.model(ecc.mixture.disc, model.file)
+model.file = "ecc_heir_rayleigh.txt"
+parameters.to.save = c("h", "k", "sigmae")
+write.model(ecc.disc.rayleigh, model.file)
+
+ecc.disc.rayleigh.untruncated <- function() {
+sigmae ~ dunif(0.,1.)
+zero[1] <- 0.
+zero[2] <- 0.
+prec.theta[1, 1] <- 1/(sigmae * sigmae)
+prec.theta[2, 2] <- 1/(sigmae * sigmae)
+prec.theta[1, 2] <- 0.0
+prec.theta[2, 1] <- 0.0
+for (i in 1:Ndata) { 
+ theta[i, 1:2] ~ dmnorm(zero[], prec.theta[,])
+ hhat[i] ~ dnorm(h[i], 1/sigmahobs[i]) %_% T(-1,1)
+ khat[i] ~ dnorm(k[i], 1/sigmakobs[i]) %_% T(-sqrt(1.0-hhat[i]^2),sqrt(1.0-hhat[i]^2))
+ }
+}
+#model.file = "ecc_heir_rayleigh_untruncated.txt"
+#parameters.to.save = c("theta", "sigmae")
+#write.model(ecc.disc.rayleigh.untruncated, model.file)
 #file.show(model.file)
 
+
 inits = NULL  # initial values
+data = list(hhat=inputdata$H_OBS,khat=inputdata$K_OBS,sigmahobs=inputdata$H_SIGMA,sigmakobs=inputdata$K_SIGMA,Ndata=Ndata)
+sim = jags(data, inits, parameters.to.save, model.file=model.file, n.chains=2, n.iter=400)
 
-Ncomp <- 2
-data = list(hhat=inputdata$H_OBS,khat=inputdata$K_OBS,sigmahobs=inputdata$H_SIGMA,sigmakobs=inputdata$K_SIGMA,Ndata=Ndata,Ncomp=Ncomp)
-parameters.to.save = c("h", "k", "sigmae", "f")
-
-sim = jags(data, inits, parameters.to.save, model.file=model.file, n.chains=2, n.iter=1000)
-
-#print(sim)
+print(sim)
 #plot(sim)
 
 
 colnames(sim$BUGSoutput$sims.matrix)
-ffirstcol = 2
-flastcol = 2 + Ncomp -1
-fpred <- sim$BUGSoutput$sims.matrix[,ffirstcol:flastcol]
-hfirstcol = 2 + Ncomp
+hfirstcol = 2
 hlastcol = hfirstcol + length(inputdata$H_OBS)-1
 hpred <- sim$BUGSoutput$sims.matrix[,hfirstcol:hlastcol]
 hist(hpred, prob=T, breaks=20)
@@ -56,27 +65,13 @@ klastcol = kfirstcol + length(inputdata$K_OBS)-1
 kpred <- sim$BUGSoutput$sims.matrix[,kfirstcol:klastcol]
 hist(kpred, prob=T, breaks=20)
 hist(inputdata$K_TRUE, breaks=20)
-sigmaefirstcol = klastcol + 1
-sigmaelastcol = klastcol + Ncomp -1
-sigmae.post <- sim$BUGSoutput$sims.matrix[,sigmaefirstcol:sigmaelastcol]
-hist(sigmae.post, prob=T, breaks=20)
 
 epred <- sqrt(hpred^2+kpred^2)
-hist(epred, prob=T, breaks=40)
+hist(epred, prob=T, breaks=20)
 hist(sqrt(inputdata$H_TRUE^2+inputdata$K_TRUE^2), breaks=20)
 
-
-plot(sim$BUGSoutput$sims.matrix[,"sigmae[1]"],sim$BUGSoutput$sims.matrix[,"sigmae[2]"])
-sigmaelo <- sim$BUGSoutput$sims.matrix[,"sigmae[1]"]
-sigmaehi <- sim$BUGSoutput$sims.matrix[,"sigmae[2]"]
-for(i in 1:length(sigmaelo)) {
- if(sigmaelo[i]>sigmaehi[i]) {
-  tmp = sigmaelo[i]
-  sigmaelo[i] = sigmaehi[i]
-  sigmaehi[i] = tmp
-  }
- }
-plot(sigmaelo,sigmaehi)
+sigmae.post <- sim$BUGSoutput$sims.matrix[,"sigmae"]
+hist(sigmae.post, prob=T, breaks=20)
 
 sumsq <- function(x) { sum(x^2) }
 
