@@ -21,9 +21,9 @@ f[1:Ncomp] ~ ddirch(alpha)
 for (i in 1:Ndata) {  
  c[i] ~ dcat(f) 
  h[i] ~ dnorm(0.,1.0/(sigmae[c[i]]*sigmae[c[i]])) %_% T(-1,1) 
- k[i] ~ dnorm(0.,1.0/(sigmae[c[i]]*sigmae[c[i]])) %_% T(-1,1)
+ k[i] ~ dnorm(0.,1.0/(sigmae[c[i]]*sigmae[c[i]])) %_% T(-sqrt(1.0-h[i]^2),sqrt(1.0-h[i]^2))
  hhat[i] ~ dnorm(h[i],1.0/(sigmahobs[i]*sigmahobs[i])) %_% T(-1,1)
- khat[i] ~ dnorm(k[i],1.0/(sigmakobs[i]*sigmakobs[i])) %_% T(-1,1)
+ khat[i] ~ dnorm(k[i],1.0/(sigmakobs[i]*sigmakobs[i])) %_% T(-sqrt(1.0-hhat[i]^2),sqrt(1.0-hhat[i]^2))
  }
 }
 model.file = "ecc_heir_disc.txt"
@@ -38,7 +38,7 @@ parameters.to.save = c("h", "k", "sigmae", "f")
 
 sim = jags(data, inits, parameters.to.save, model.file=model.file, n.chains=2, n.iter=1000)
 
-#print(sim)
+print(sim)
 #plot(sim)
 
 
@@ -77,6 +77,7 @@ for(i in 1:length(sigmaelo)) {
   }
  }
 plot(sigmaelo,sigmaehi)
+#hist2d(sigmaelo, sigmaehi, same.scale=TRUE, nbins=200)
 
 sumsq <- function(x) { sum(x^2) }
 
