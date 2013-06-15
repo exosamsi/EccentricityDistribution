@@ -31,12 +31,20 @@ write.model(ecc.mixture.disc, model.file)
 #file.show(model.file)
 
 inits = NULL  # initial values
+parameters.to.save = c("h", "k", "sigmae", "f")
 
 Ncomp <- 2
 data = list(hhat=inputdata$H_OBS,khat=inputdata$K_OBS,sigmahobs=inputdata$H_SIGMA,sigmakobs=inputdata$K_SIGMA,Ndata=Ndata,Ncomp=Ncomp)
-parameters.to.save = c("h", "k", "sigmae", "f")
-
 sim = jags(data, inits, parameters.to.save, model.file=model.file, n.chains=2, n.iter=1000)
+calc.metric.1(inputdata$H_TRUE,inputdata$K_TRUE,hpred,kpred)
+
+Ncomp <- 2
+hktest <- generate.ecc.mixture.disc(Ndata,c(0.3,0.7),c(0.3,0.05),0.05,0.2)
+htest <- hktest[1:Ndata]
+ktest <- hktest[(Ndata+1):(2*Ndata)]
+data = list(hhat=htest,khat=ktest,sigmahobs=rep(0.05,Ndata),sigmakobs=rep(0.2,Ndata),Ndata=Ndata,Ncomp=Ncomp)
+sim = jags(data, inits, parameters.to.save, model.file=model.file, n.chains=2, n.iter=1000)
+calc.metric.1(htest,ktest,hpred,kpred)
 
 print(sim)
 #plot(sim)
@@ -79,20 +87,4 @@ for(i in 1:length(sigmaelo)) {
 plot(sigmaelo,sigmaehi)
 #hist2d(sigmaelo, sigmaehi, same.scale=TRUE, nbins=200)
 
-sumsq <- function(x) { sum(x^2) }
-
-calc.metric.1 <- function(h,k,hpred,kpred) {
-Nobj <- length(h)
-Nsim <- length(hpred[,1])
-e <- sqrt(h^2+k^2)
-epred <- sqrt(hpred^2+kpred^2)
-sse = 0.0
-sshk = 0.0
-for (i in 1:Nobj) {  
- sse = sse + sumsq(e[i]-epred[,i])
- sshk = sshk + sumsq(h[i]-hpred[,i]) + sumsq(k[i]-kpred[,i])
-}
-c(sse,sshk)
-}
-
-calc.metric.1(inputdata$H_TRUE,inputdata$K_TRUE,hpred,kpred)
+calc.ecc.metric.1(inputdata$H_TRUE,inputdata$K_TRUE,hpred,kpred)

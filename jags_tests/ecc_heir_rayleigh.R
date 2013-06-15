@@ -73,20 +73,4 @@ hist(sqrt(inputdata$H_TRUE^2+inputdata$K_TRUE^2), breaks=20)
 sigmae.post <- sim$BUGSoutput$sims.matrix[,"sigmae"]
 hist(sigmae.post, prob=T, breaks=20)
 
-sumsq <- function(x) { sum(x^2) }
-
-calc.metric.1 <- function(h,k,hpred,kpred) {
-Nobj <- length(h)
-Nsim <- length(hpred[,1])
-e <- sqrt(h^2+k^2)
-epred <- sqrt(hpred^2+kpred^2)
-sse = 0.0
-sshk = 0.0
-for (i in 1:Nobj) {  
- sse = sse + sumsq(e[i]-epred[,i])
- sshk = sshk + sumsq(h[i]-hpred[,i]) + sumsq(k[i]-kpred[,i])
-}
-c(sse,sshk)
-}
-
-calc.metric.1(inputdata$H_TRUE,inputdata$K_TRUE,hpred,kpred)
+calc.ecc.metric.1(inputdata$H_TRUE,inputdata$K_TRUE,hpred,kpred)
