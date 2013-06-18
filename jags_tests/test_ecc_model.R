@@ -1,4 +1,4 @@
-
+source("calc_ecc_metric_1.R")
 
 test.ecc.model.w.disc.mixture <- function(model.file, Ndata, ftrue, sigmaetrue, sigmahobs, sigmakobs, data.to.add = list(), inits=NULL, n.iter=1000)
 {
