@@ -20,7 +20,7 @@ for (i in 1:Ndata) {
  h[i] ~ dnorm(0.0,lambda[i]/(sigmae*sigmae)) %_% T(-1,1) 
  k[i] ~ dnorm(0.0,lambda[i]/(sigmae*sigmae)) %_% T(-sqrt(1.0-h[i]^2),sqrt(1.0-h[i]^2))
  hhat[i] ~ dnorm(h[i],1.0/(sigmahobs[i]*sigmahobs[i])) %_% T(-1,1)
- khat[i] ~ dnorm(k[i],1.0/(sigmakobs[i]*sigmakobs[i])) %_% %_% T(-sqrt(1.0-hhat[i]^2),sqrt(1.0-hhat[i]^2))
+ khat[i] ~ dnorm(k[i],1.0/(sigmakobs[i]*sigmakobs[i])) %_% T(-sqrt(1.0-hhat[i]^2),sqrt(1.0-hhat[i]^2))
  }
 }
 model.file = "ecc_heir_cont.txt"
