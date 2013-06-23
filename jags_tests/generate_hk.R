@@ -48,6 +48,27 @@ list(hhat=hhat,khat=khat,htrue=h,ktrue=k,P=P)
 # x$hhat
 # x[[1]]
 
+# Generate a simulated data set for h & k for testing purposes
+generate.ecc.mixture.cont <- function(Ndata,alpha,sigmae,sigmahobs,sigmakobs) {
+lambda = rep(0.,Ndata)
+h = rep(0.,Ndata)
+k = rep(0.,Ndata)
+hhat = rep(0.,Ndata)
+khat = rep(0.,Ndata)
+P = rpareto.bound(Ndata,1.0,0.1, upper.bound=365.0) 
+lambda = rgamma(Ndata,0.5*alpha,rate=0.5*alpha)
+for (i in 1:Ndata) { 
+ h[i] = rnorm.bound(1,0.0,sigmae/sqrt(lambda[i]),lower.bound=-1,upper.bound=1) 
+ k[i] = rnorm.bound(1,0.0,sigmae/sqrt(lambda[i]),lower.bound=-sqrt(1-h^2),upper.bound=sqrt(1-h^2)) 
+ hhat[i] = rnorm.bound(1,h[i],sigmahobs,lower.bound=-1,upper.bound=1)
+ khat[i] = rnorm.bound(1,k[i],sigmakobs,lower.bound=-sqrt(1-h^2),upper.bound=sqrt(1-h^2))
+ }
+list(hhat=hhat,khat=khat,htrue=h,ktrue=k,P=P)
+}
+# access via
+# x = gener....
+# x$hhat
+# x[[1]]
 
 # Generate a simulated data set for h & k for testing purposes
 generate.ecc.uniform <- function(Ndata,emax,sigmahobs,sigmakobs) {

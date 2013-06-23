@@ -2,16 +2,15 @@ model
 {
     alpha <- 2
     sigmae ~ dunif(0.00000E+00, 1)
-    prec.theta[1, 1] <- 1/(sigmae * sigmae)
-    prec.theta[2, 2] <- 1/(sigmae * sigmae)
-    prec.theta[1, 2] <- 0.00000E+00
-    prec.theta[2, 1] <- 0.00000E+00
     for (i in 1:Ndata) {
         lambda[i] ~ dgamma(alpha/2, alpha/2)
-        theta[i, 1:2] ~ dmnorm(zero[], lambda[i] * prec.theta[, 
-            ])
-        hhat[i] ~ dnorm(theta[i, 1], 1/sigmahobs[i])
-        khat[i] ~ dnorm(theta[i, 2], 1/sigmakobs[i])
-        e[i] <- sqrt(inprod(theta[i, ], theta[i, ]))
+        h[i] ~ dnorm(0.00000E+00, lambda[i]/(sigmae * sigmae))  
+            T(-1, 1)
+        k[i] ~ dnorm(0.00000E+00, lambda[i]/(sigmae * sigmae))  
+            T(-sqrt(1 - h[i]^2), sqrt(1 - h[i]^2))
+        hhat[i] ~ dnorm(h[i], 1/(sigmahobs[i] * sigmahobs[i]))  
+            T(-1, 1)
+        khat[i] ~ dnorm(k[i], 1/(sigmakobs[i] * sigmakobs[i]))  
+            T(-sqrt(1 - hhat[i]^2), sqrt(1 - hhat[i]^2))
     }
 }
